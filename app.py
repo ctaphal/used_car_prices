@@ -6,6 +6,7 @@ from io import StringIO
 import base64
 
 app = dash.Dash(__name__, suppress_callback_exceptions=True)
+server = app.server
 
 # file uploader
 app.layout = html.Div([
