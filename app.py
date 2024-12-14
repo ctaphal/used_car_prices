@@ -203,4 +203,4 @@ def update_correlations_bar_chart(selected_target, data):
     return px.bar()
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8050)
+    app.run_server(debug=True)
