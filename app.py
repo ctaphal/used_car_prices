@@ -113,7 +113,16 @@ def update_based_on_file(file_contents, file_name):
                     dcc.Checklist(options=df.columns, value=[], id='training_features_selector', inline=True),
                     html.Br(),
                     html.Button('Train Model', id='start_training', n_clicks=0),
-                    html.Div(id='r2-score')
+                    html.Div(id='r2-score'),
+                    html.Div(
+                        [
+                            "Input Predictions: ",
+                            dcc.Input(id='predict_input', value='initial value', type='text'),
+                            html.Button('Predict', id='start_predictions', n_clicks=0),
+                            html.Div(id='prediction'),
+                        ], 
+                        id='predict', 
+                    )
                 ],
                 style={
                         'display': 'block',
@@ -161,6 +170,33 @@ def train_model(n_clicks, selected_categories, selected_target, data):
         y_pred = pipe.predict(x_test)
         r2 = r2_score(y_test, y_pred)
         return f"R2 Score: {r2}"
+    return "Could not conlude processing."
+
+@app.callback(
+    Output('prediction', 'children'),
+    [
+    Input('start_prediction','n_clicks'),
+    Input('training_features_selector', 'value'),
+    Input('target-selector', 'value'),
+    Input('predict-value', 'value'),
+    Input('stored-data', 'data'),],
+    prevent_initial_call=True
+)
+def make_predictions(n_clicks, selected_categories, selected_target, predict_x, data):
+    if(n_clicks == 0):
+        return no_update
+    if data:
+        print("running")
+        df = pd.DataFrame(data)
+        pipe = Pipeline([
+            ('imputer', SimpleImputer(strategy='constant')),
+            ('encoder', OneHotEncoder(handle_unknown='ignore')), # when encountering an unseen category, the encoder will assign it all zeros
+            ('model', RandomForestRegressor(random_state=42))
+        ])
+        x_train, x_test, y_train, y_test = train_test_split(df[selected_categories], df[selected_target], test_size=0.2, random_state=42)
+        pipe.fit(x_train, y_train)
+        y_pred = pipe.predict(predict_x.split(','))
+        return f"Predicitions: {y_pred}"
     return "Could not conlude processing."
 
 
