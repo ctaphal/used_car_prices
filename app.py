@@ -139,14 +139,13 @@ def update_based_on_file(file_contents, file_name):
 @app.callback(
     Output('r2-score', 'children'),
     [
-    Input('start-training','n_clicks'),
-    Input('training-features-selector', 'value'),
+    Input('start_training','n_clicks'),
+    Input('training_features_selector', 'value'),
     Input('target-selector', 'value'),
     Input('stored-data', 'data'),],
     prevent_initial_call=True
 )
 def train_model(n_clicks, selected_categories, selected_target, data):
-    print('am i runnign?')
     if(n_clicks == 0):
         return no_update
     if data:
@@ -159,7 +158,7 @@ def train_model(n_clicks, selected_categories, selected_target, data):
         ])
         x_train, x_test, y_train, y_test = train_test_split(df[selected_categories], df[selected_target], test_size=0.2, random_state=42)
         pipe.fit(x_train, y_train)
-        y_pred = pipe.predict(y_train)
+        y_pred = pipe.predict(x_test)
         r2 = r2_score(y_test, y_pred)
         return f"R2 Score: {r2}"
     return "Could not conlude processing."
