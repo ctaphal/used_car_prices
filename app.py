@@ -1,5 +1,5 @@
 import dash
-from dash import dcc, html, Input, Output, State
+from dash import dcc, html, Input, Output, State, no_update
 import pandas as pd
 import plotly.express as px
 from io import StringIO
@@ -146,7 +146,11 @@ def update_based_on_file(file_contents, file_name):
     prevent_initial_call=True
 )
 def train_model(n_clicks, selected_categories, selected_target, data):
+    print('am i runnign?')
+    if(n_clicks == 0):
+        return no_update
     if data:
+        print("running")
         df = pd.DataFrame(data)
         pipe = Pipeline([
             ('imputer', SimpleImputer(strategy='constant')),
